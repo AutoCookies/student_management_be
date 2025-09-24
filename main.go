@@ -3,35 +3,60 @@ package main
 import (
 	"fmt"
 	"student_management_be/models"
-	"time" // ✅ needed for time.Time
+	"time"
 )
 
 func main() {
-	tt := models.TimeTable{
-		ID:   1,
-		Name: "Morning Schedule",
-	}
+	// ---------- Test Account ----------
+	fmt.Println("===== Account =====")
+	birth := time.Date(1995, 7, 10, 0, 0, 0, 0, time.UTC)
+	acc := models.NewAccount(1, "Alice", "alice@example.com", birth, "Admin", 101)
+	fmt.Println(acc.String())
 
-	class := models.Classroom{
-		ID:          101,
-		Name:        "Physics",
-		Total:       45,
-		TimeTableID: tt.ID,
-	}
+	acc.SetName("Alice Nguyen")
+	acc.SetEmail("alice.nguyen@example.com")
+	fmt.Println("After update:", acc.String())
 
-	// Correct: Birth is time.Time, not string
-	birthDate, _ := time.Parse("2006-01-02", "2025-09-01")
+	// ---------- Test TimeTable ----------
+	fmt.Println("\n===== TimeTable =====")
+	tt := models.NewTimeTable(1, "Morning Schedule")
+	fmt.Println(tt.String())
 
-	account := models.Account{
-		ID:          1,
-		Name:        "Cookiescooker",
-		Email:       "no@cookiescooker.click",
-		Birth:       birthDate,
-		Role:        "student",
-		TimeTableID: tt.ID,
-	}
+	tt.SetName("Evening Schedule")
+	fmt.Println("After update:", tt.String())
 
-	fmt.Println(tt)      // TimeTable[ID=1, Name=Morning Schedule]
-	fmt.Println(class)   // Classroom[ID=101, Name=Physics, Total=45, TimeTableID=1]
-	fmt.Println(account) // Account[ID=1, Name=Cookiescooker, Email=no@..., Birth=2025-09-01, Role=student, TimeTableID=1]
+	// ---------- Test MarkTable ----------
+	fmt.Println("\n===== MarkTable =====")
+	markTable := models.NewMarkTable(1, 8.75, "A", 1)
+	fmt.Println(markTable.String())
+
+	markTable.SetAverageScore(9.2)
+	markTable.SetRank("A+")
+	fmt.Println("After update:", markTable.String())
+
+	// ---------- Test Subject ----------
+	fmt.Println("\n===== Subject =====")
+	subject := models.NewSubject(1, "Math", 1)
+	fmt.Println(subject.String())
+
+	subject.SetName("Advanced Math")
+	subject.SetSemester(2)
+	fmt.Println("After update:", subject.String())
+
+	// ---------- Test Test ----------
+	fmt.Println("\n===== Test =====")
+	test := models.NewTest(1, 1)
+	fmt.Println(test.String())
+
+	test.SetAccountId(2)
+	fmt.Println("After update:", test.String())
+
+	// ---------- Test MarkDetails ----------
+	fmt.Println("\n===== MarkDetails =====")
+	markDetails := models.NewMarkDetails(1, 1, 9.5, 1)
+	fmt.Println(markDetails.String())
+
+	markDetails.SetMark(9.8)
+	markDetails.SetTestId(2)
+	fmt.Println("After update:", markDetails.String())
 }
