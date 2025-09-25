@@ -8,7 +8,8 @@ import (
 func TestAccount(t *testing.T) {
 	// Khởi tạo dữ liệu
 	birth := time.Date(1995, 7, 10, 0, 0, 0, 0, time.UTC)
-	acc := NewAccount(1, "Alice", "alice@example.com", birth, "Admin", 101)
+	timetableID := 101
+	acc := NewAccount(1, "Alice", "alice@example.com", birth, "Admin", &timetableID)
 
 	// --- Test Getter ---
 	if acc.GetName() != "Alice" {
@@ -27,8 +28,8 @@ func TestAccount(t *testing.T) {
 		t.Errorf("Expected Birth '%v', got '%v'", birth, acc.GetBirth())
 	}
 
-	if acc.GetTimeTableID() != 101 {
-		t.Errorf("Expected TimeTableID 101, got %d", acc.GetTimeTableID())
+	if acc.GetTimeTableID() == nil || *acc.GetTimeTableID() != 101 {
+		t.Errorf("Expected TimeTableID 101, got %v", acc.GetTimeTableID())
 	}
 
 	if acc.GetCreatedAt().IsZero() {
@@ -57,9 +58,10 @@ func TestAccount(t *testing.T) {
 		t.Errorf("Expected Birth '%v', got '%v'", newBirth, acc.GetBirth())
 	}
 
-	acc.SetTimeTableID(202)
-	if acc.GetTimeTableID() != 202 {
-		t.Errorf("Expected TimeTableID 202, got %d", acc.GetTimeTableID())
+	newTimeTableID := 202
+	acc.SetTimeTableID(&newTimeTableID)
+	if acc.GetTimeTableID() == nil || *acc.GetTimeTableID() != 202 {
+		t.Errorf("Expected TimeTableID 202, got %v", acc.GetTimeTableID())
 	}
 
 	// --- Test String ---
