@@ -15,7 +15,7 @@ type AccountRepository interface {
 	Get(id int) (*models.Account, error)
 	Update(account *models.Account) error
 	Delete(id int) error
-	List() ([]*models.Account, error)
+	List(limit, offset int) ([]*models.Account, error)
 }
 
 type AccountController struct {
@@ -60,11 +60,28 @@ func (c *AccountController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // List accounts
 func (c *AccountController) handleList(w http.ResponseWriter, r *http.Request) {
-	accounts, err := c.repo.List()
+	// mặc định
+	limit := 10
+	offset := 0
+
+	// lấy từ query param
+	if l := r.URL.Query().Get("limit"); l != "" {
+		if val, err := strconv.Atoi(l); err == nil && val > 0 {
+			limit = val
+		}
+	}
+	if o := r.URL.Query().Get("offset"); o != "" {
+		if val, err := strconv.Atoi(o); err == nil && val >= 0 {
+			offset = val
+		}
+	}
+
+	accounts, err := c.repo.List(limit, offset)
 	if err != nil {
 		http.Error(w, "failed to get accounts: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	res := make([]dto.AccountResponse, 0, len(accounts))
 	for _, a := range accounts {
 		res = append(res, dto.AccountResponse{
@@ -77,6 +94,7 @@ func (c *AccountController) handleList(w http.ResponseWriter, r *http.Request) {
 			CreatedAt:   a.CreatedAt.Format("2006-01-02 15:04:05"),
 		})
 	}
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(res)
 }
@@ -137,25 +155,30 @@ func (c *AccountController) handleGet(w http.ResponseWriter, r *http.Request, id
 }
 
 // Update account by ID
+// Update account by ID
 func (c *AccountController) handleUpdate(w http.ResponseWriter, r *http.Request, id int) {
+	// Decode body JSON
 	var req dto.CreateAccountRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
+	// Parse birth date
 	birth, err := time.Parse("2006-01-02", req.Birth)
 	if err != nil {
 		http.Error(w, "invalid birth date", http.StatusBadRequest)
 		return
 	}
 
+	// Lấy account hiện tại từ DB
 	acc, err := c.repo.Get(id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
+	// Cập nhật dữ liệu
 	acc.SetName(req.Name)
 	acc.SetEmail(req.Email)
 	acc.SetRole(req.Role)
@@ -167,11 +190,13 @@ func (c *AccountController) handleUpdate(w http.ResponseWriter, r *http.Request,
 		acc.SetTimeTableID(nil)
 	}
 
+	// Update trong DB
 	if err := c.repo.Update(acc); err != nil {
 		http.Error(w, "failed to update account: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	// Trả về response
 	json.NewEncoder(w).Encode(dto.AccountResponse{
 		ID:          acc.ID,
 		Name:        acc.Username,

@@ -16,14 +16,22 @@ func main() {
 
 	// Repository
 	accountRepo := repository.NewMySQLAccountRepository(libs.DB)
+	classroomRepo := repository.NewMySQLClassroomRepository(libs.DB)
 
 	// Controller
 	accountController := controllers.NewAccountController(accountRepo)
+	classroomController := controllers.NewClassroomController(classroomRepo)
 
 	// Router
 	mux := http.NewServeMux()
+
+	// Accounts
 	mux.Handle("/accounts", accountController)
 	mux.Handle("/accounts/", accountController)
+
+	// Classrooms
+	mux.Handle("/classrooms", classroomController)
+	mux.Handle("/classrooms/", classroomController)
 
 	// Run server
 	log.Println("🚀 Server running at http://localhost:8080")

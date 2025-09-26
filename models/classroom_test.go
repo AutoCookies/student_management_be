@@ -5,10 +5,10 @@ import (
 	"time"
 )
 
-// Test Classroom
 func TestClassroom(t *testing.T) {
-	// Constructor
-	classroom := NewClassroom(1, "Class A", 30, 101)
+	// Tạo timetableID dạng *int
+	tid := 101
+	classroom := NewClassroom(1, "Class A", 30, &tid)
 
 	// --- Test Getter ---
 	if classroom.GetName() != "Class A" {
@@ -19,8 +19,8 @@ func TestClassroom(t *testing.T) {
 		t.Errorf("Expected Total 30, got %d", classroom.GetTotal())
 	}
 
-	if classroom.GetTimeTableID() != 101 {
-		t.Errorf("Expected TimeTableID 101, got %d", classroom.GetTimeTableID())
+	if classroom.GetTimeTableID() == nil || *classroom.GetTimeTableID() != 101 {
+		t.Errorf("Expected TimeTableID 101, got %v", classroom.GetTimeTableID())
 	}
 
 	if classroom.GetCreatedAt().IsZero() {
@@ -38,9 +38,15 @@ func TestClassroom(t *testing.T) {
 		t.Errorf("Expected Total 35, got %d", classroom.GetTotal())
 	}
 
-	classroom.SetTimeTableID(202)
-	if classroom.GetTimeTableID() != 202 {
-		t.Errorf("Expected TimeTableID 202, got %d", classroom.GetTimeTableID())
+	newTid := 202
+	classroom.SetTimeTableID(&newTid)
+	if classroom.GetTimeTableID() == nil || *classroom.GetTimeTableID() != 202 {
+		t.Errorf("Expected TimeTableID 202, got %v", classroom.GetTimeTableID())
+	}
+
+	classroom.SetTimeTableID(nil)
+	if classroom.GetTimeTableID() != nil {
+		t.Errorf("Expected TimeTableID nil, got %v", classroom.GetTimeTableID())
 	}
 
 	newCreated := time.Date(2025, 9, 22, 12, 0, 0, 0, time.UTC)

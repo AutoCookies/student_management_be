@@ -82,21 +82,22 @@ func (r *MySQLAccountRepository) Get(id int) (*models.Account, error) {
 // Update updates an account
 func (r *MySQLAccountRepository) Update(account *models.Account) error {
 	query := `
-	UPDATE Account
-	SET Username=?, Email=?, Birth=?, Role=?, TimeTableID=?
-	WHERE ID=?
+		UPDATE Account
+		SET Username=?, Email=?, Birth=?, Role=?, TimeTableID=?
+		WHERE ID=?
 	`
+
 	result, err := r.DB.Exec(query,
 		account.Username,
 		account.Email,
 		account.Birth,
 		account.Role,
-		account.TimeTableID, // *int nil sẽ chuyển NULL
-		account.ID,
+		account.TimeTableID,
 	)
 	if err != nil {
 		return err
 	}
+
 	rows, _ := result.RowsAffected()
 	if rows == 0 {
 		return errors.New("account not found")
@@ -118,12 +119,14 @@ func (r *MySQLAccountRepository) Delete(id int) error {
 }
 
 // List returns all accounts
-func (r *MySQLAccountRepository) List() ([]*models.Account, error) {
+func (r *MySQLAccountRepository) List(limit, offset int) ([]*models.Account, error) {
 	query := `
 	SELECT ID, Username, Email, Birth, Role, TimeTableID, CreatedAt
 	FROM Account
+	ORDER BY ID ASC
+	LIMIT ? OFFSET ?
 	`
-	rows, err := r.DB.Query(query)
+	rows, err := r.DB.Query(query, limit, offset)
 	if err != nil {
 		return nil, err
 	}
