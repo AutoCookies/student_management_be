@@ -58,7 +58,7 @@ func (c *ClassroomController) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
-// ✅ List classrooms
+// List classrooms
 func (c *ClassroomController) handleList(w http.ResponseWriter, r *http.Request) {
 	limit := 10
 	offset := 0
@@ -95,7 +95,7 @@ func (c *ClassroomController) handleList(w http.ResponseWriter, r *http.Request)
 	json.NewEncoder(w).Encode(res)
 }
 
-// ✅ Create classroom
+// Create classroom
 func (c *ClassroomController) handleCreate(w http.ResponseWriter, r *http.Request) {
 	var req dto.CreateClassroomRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -119,7 +119,7 @@ func (c *ClassroomController) handleCreate(w http.ResponseWriter, r *http.Reques
 	})
 }
 
-// ✅ Get classroom by ID
+// Get classroom by ID
 func (c *ClassroomController) handleGet(w http.ResponseWriter, r *http.Request, id int) {
 	classroom, err := c.repo.Get(id)
 	if err != nil {
@@ -136,7 +136,7 @@ func (c *ClassroomController) handleGet(w http.ResponseWriter, r *http.Request, 
 	})
 }
 
-// ✅ Update classroom
+// Update classroom
 func (c *ClassroomController) handleUpdate(w http.ResponseWriter, r *http.Request, id int) {
 	var req dto.CreateClassroomRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -172,7 +172,7 @@ func (c *ClassroomController) handleUpdate(w http.ResponseWriter, r *http.Reques
 	})
 }
 
-// ✅ Delete classroom
+// Delete classroom
 func (c *ClassroomController) handleDelete(w http.ResponseWriter, r *http.Request, id int) {
 	if err := c.repo.Delete(id); err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)

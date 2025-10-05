@@ -34,6 +34,6 @@ func main() {
 	mux.Handle("/classrooms/", classroomController)
 
 	// Run server
-	log.Println("🚀 Server running at http://localhost:8080")
+	log.Println("Server running at http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", mux))
 }
